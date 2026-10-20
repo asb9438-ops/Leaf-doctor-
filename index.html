@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crop Wealth</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: #173d27;
+    background: linear-gradient(135deg, #d9f5d2, #fff5d8, #cceee0);
+    min-height: 100vh;
+}
+
+header {
+    background: linear-gradient(120deg, #14532d, #35a45b);
+    color: white;
+    text-align: center;
+    padding: 28px 12px;
+}
+
+header h1 {
+    font-size: clamp(23px, 5vw, 36px);
+    margin: 0 0 10px;
+}
+
+header p { margin: 0; }
+
+.container {
+    max-width: 850px;
+    margin: 24px auto;
+    padding: 0 15px;
+}
+
+.card {
+    background: rgba(255,255,255,0.9);
+    padding: 22px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+    box-shadow: 0 5px 18px #174d2715;
+}
+
+h2 { color: #176b3a; }
+
+input, select, button {
+    width: 100%;
+    padding: 13px;
+    margin: 8px 0;
+    border-radius: 9px;
+    font-size: 16px;
+}
+
+input, select {
+    border: 1px solid #b6d4bd;
+    background: white;
+}
+
+button {
+    border: none;
+    background: #218447;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover { background: #14532d; }
+
+#preview {
+    display: none;
+    width: 100%;
+    max-height: 420px;
+    object-fit: contain;
+    border-radius: 12px;
+    margin-top: 15px;
+    background: #edf5eb;
+}
+
+#result {
+    display: none;
+    padding: 16px;
+    background: #edf8eb;
+    border-radius: 12px;
+    line-height: 1.7;
+}
+
+.warning {
+    background: #fff0ce;
+    padding: 12px;
+    border-radius: 9px;
+    color: #704c00;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #41644a;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🌿 CROP WEALTH IS OUR WEALTH 🌾</h1>
+    <p>Healthy Crops • Healthy Farmers • Healthy Future</p>
+</header>
+
+<main class="container">
+
+<section class="card">
+    <h2>📷 Leaf Photo</h2>
+    <p>Upload a clear photograph of a tomato, potato, or corn leaf.</p>
+
+    <input type="file" id="photo" accept="image/*">
+
+    <img id="preview" alt="Uploaded crop leaf">
+
+    <p id="photoStatus">No photo selected.</p>
+</section>
+
+<section class="card">
+    <h2>🔍 Disease Information</h2>
+
+    <p>
+        This demo lets you select a suspected condition and view
+        general care guidance. It does not automatically diagnose
+        diseases from photos.
+    </p>
+
+    <label for="crop"><b>Select crop</b></label>
+    <select id="crop">
+        <option value="tomato">🍅 Tomato</option>
+        <option value="potato">🥔 Potato</option>
+        <option value="corn">🌽 Corn / Maize</option>
+    </select>
+
+    <label for="disease"><b>Select suspected condition</b></label>
+    <select id="disease">
+        <option value="early">Early blight</option>
+        <option value="late">Late blight</option>
+        <option value="bacterial">Bacterial spot</option>
+        <option value="rust">Common rust</option>
+        <option value="northern">Northern leaf blight</option>
+        <option value="unknown">Not sure</option>
+    </select>
+
+    <button onclick="showGuidance()">View Crop Care Guidance</button>
+
+    <div id="result" aria-live="polite"></div>
+</section>
+
+<section class="card">
+    <h2>🌱 Low-Cost Prevention</h2>
+    <ul>
+        <li>Inspect leaves regularly for changes.</li>
+        <li>Water near the soil instead of soaking foliage.</li>
+        <li>Allow enough space for airflow between plants.</li>
+        <li>Remove affected plant material when appropriate.</li>
+        <li>Use clean tools and healthy planting material.</li>
+        <li>Confirm the cause before applying crop treatments.</li>
+    </ul>
+</section>
+
+<section class="card">
+    <h2>📚 Trusted Agricultural Resources</h2>
+    <p><a href="https://icar.org.in/" target="_blank" rel="noopener">ICAR — Indian Council of Agricultural Research</a></p>
+    <p><a href="https://tnau.ac.in/" target="_blank" rel="noopener">Tamil Nadu Agricultural University</a></p>
+    <p><a href="https://extension.umn.edu/plant-diseases" target="_blank" rel="noopener">University of Minnesota Extension</a></p>
+
+    <div class="warning">
+        Low-confidence or uncertain symptoms should be checked by
+        a local agricultural extension officer or plant clinic.
+        Do not rely on this demo for a confirmed diagnosis.
+    </div>
+</section>
+
+</main>
+
+<footer>
+    🌾 Crop Wealth — Growing a Greener Tomorrow
+</footer>
+
+<script>
+const photoInput = document.getElementById("photo");
+const preview = document.getElementById("preview");
+const photoStatus = document.getElementById("photoStatus");
+
+photoInput.addEventListener("change", function () {
+    const file = this.files[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        photoStatus.textContent = "Please select an image file.";
+        preview.style.display = "none";
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+        preview.src = event.target.result;
+        preview.style.display = "block";
+        photoStatus.textContent =
+            "Photo uploaded. AI diagnosis is not enabled in this demo.";
+    };
+
+    reader.readAsDataURL(file);
+});
+
+const guidance = {
+    early: {
+        name: "Early blight",
+        severity: "Variable; monitor how quickly symptoms spread.",
+        cause: "Often associated with the fungus Alternaria solani.",
+        steps: [
+            "Remove badly affected leaves where practical.",
+            "Water at soil level and improve airflow.",
+            "Manage infected crop residues.",
+            "Seek local advice if the disease spreads."
+        ]
+    },
+    late: {
+        name: "Late blight",
+        severity: "Potentially high; prompt assessment is important.",
+        cause: "Associated with Phytophthora infestans.",
+        steps: [
+            "Contact an agricultural extension officer promptly.",
+            "Avoid moving suspect plant material through healthy crops.",
+            "Avoid overhead watering where possible.",
+            "Follow locally approved disease-management advice."
+        ]
+    },
+    bacterial: {
+        name: "Bacterial spot",
+        severity: "Variable depending on conditions.",
+        cause: "Can be caused by bacteria in the Xanthomonas group.",
+        steps: [
+            "Avoid handling plants when leaves are wet.",
+            "Clean tools between plants.",
+            "Use healthy seeds and transplants.",
+            "Confirm the cause before selecting treatment."
+        ]
+    },
+    rust: {
+        name: "Common rust",
+        severity: "Variable; check several plants.",
+        cause: "Common rust of maize is associated with Puccinia sorghi.",
+        steps: [
+            "Inspect plants for spreading symptoms.",
+            "Maintain balanced crop nutrition.",
+            "Consider resistant varieties in future seasons.",
+            "Ask a local expert whether treatment is needed."
+        ]
+    },
+    northern: {
+        name: "Northern leaf blight",
+        severity: "Variable; widespread symptoms need assessment.",
+        cause: "Associated with the fungus Exserohilum turcicum.",
+        steps: [
+            "Monitor symptoms on multiple plants.",
+            "Rotate crops where practical.",
+            "Manage crop residues appropriately.",
+            "Ask an extension officer about local management options."
+        ]
+    },
+    unknown: {
+        name: "Unconfirmed symptoms",
+        severity: "Unknown until inspected.",
+        cause: "Symptoms may result from disease, pests, nutrient issues or weather.",
+        steps: [
+            "Photograph the whole plant and both sides of affected leaves.",
+            "Check several plants for similar symptoms.",
+            "Avoid applying pesticides before confirming the cause.",
+            "Consult a local agricultural extension officer."
+        ]
+    }
+};
+
+function showGuidance() {
+    const crop = document.getElementById("crop").value;
+    const selected = document.getElementById("disease").value;
+    const item = guidance[selected];
+    const result = document.getElementById("result");
+
+    let cropName = {
+        tomato: "Tomato",
+        potato: "Potato",
+        corn: "Corn / Maize"
+    }[crop];
+
+    // Avoid displaying crop-disease combinations that this demo
+    // does not specifically support as verified combinations.
+    let note = "";
+
+    if (
+        (selected === "bacterial" && crop !== "tomato") ||
+        (selected === "rust" && crop !== "corn") ||
+        (selected === "northern" && crop !== "corn")
+    ) {
+        note = "<p><b>Important:</b> This condition may not match the selected crop. The information below is general and does not confirm a diagnosis.</p>";
+    }
+
+    const steps = item.steps
+        .map(step => "<li>" + step + "</li>")
+        .join("");
+
+    result.innerHTML = `
+        <h3>${cropName}: ${item.name}</h3>
+        ${note}
+        <p><b>Severity guide:</b> ${item.severity}</p>
+        <p><b>Possible cause:</b> ${item.cause}</p>
+        <b>Practical next steps:</b>
+        <ul>${steps}</ul>
+        <p><b>Diagnosis status:</b> Not confirmed. This website has not
+        analyzed the image using an AI model.</p>
+    `;
+
+    result.style.display = "block";
+    result.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+</script>
+
+</body>
+  </html>
